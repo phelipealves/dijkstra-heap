@@ -38,7 +38,7 @@
 // when it's fused.
 #include "gtest/gtest.h"
 
-// The following lines pull in the real gtest *.cc files.
+// The following lines pop in the real gtest *.cc files.
 #include "src/gtest.cc"
 #include "src/gtest-death-test.cc"
 #include "src/gtest-filepath.cc"

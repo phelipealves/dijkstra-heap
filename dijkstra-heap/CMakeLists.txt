@@ -13,8 +13,7 @@ set(HEADER_FILE
 set(SOURCE_FILES
         MinHeap.cpp
         HeapNode.cpp
-        CompareMinHeap.cpp
-    )
+        CompareMinHeap.cpp d-ary-heap/DAryHeap.cpp d-ary-heap/DAryHeap.h)
 
 add_library(dijkstra-heap STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
