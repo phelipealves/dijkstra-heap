@@ -4,6 +4,8 @@
 #include<iostream>
 #include<climits>
 
+#define MIN_HEAP_POSITION 1
+
 using namespace std;
 
 // Prototype of a utility function to swap two integers
@@ -22,13 +24,19 @@ public:
     // to heapify a subtree with root at given index
     void MinHeapify(int );
 
-    int parent(int i) { return (i-1)/2; }
+    int parent(int i) {
+        return i/2;
+    }
 
     // to get index of left child of node at index i
-    int left(int i) { return (2*i + 1); }
+    int left(int i) {
+        return (2*i);
+    }
 
     // to get index of right child of node at index i
-    int right(int i) { return (2*i + 2); }
+    int right(int i) {
+        return (2*i + 1);
+    }
 
     // to extract the root which is the minimum element
     int extractMin();
@@ -37,13 +45,18 @@ public:
     void decreaseKey(int i, int new_val);
 
     // Returns the minimum key (key at root) from min heap
-    int getMin() { return harr[0]; }
+    int getMin() { return harr[MIN_HEAP_POSITION]; }
 
     // Deletes a key stored at index i
     void deleteKey(int i);
 
     // Inserts a new key 'k'
     void insertKey(int k);
+
+    // Return the size of the heap
+    int size() {
+        return heap_size;
+    }
 };
 
 #endif //DIJKSTRA_HEAP_HEAP_H

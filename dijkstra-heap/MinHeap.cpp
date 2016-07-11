@@ -1,7 +1,3 @@
-//
-// Created by phelipealves on 7/7/16.
-//
-
 #include "MinHeap.h"
 
 // Constructor: Builds a heap from a given array a[] of given size
@@ -22,9 +18,9 @@ void MinHeap::insertKey(int k)
     }
 
     // First insert the new key at the end
-    heap_size++;
-    int i = heap_size - 1;
+    int i = ++heap_size;
     harr[i] = k;
+    int a = parent(i);
 
     // Fix the min heap property if it is violated
     while (i != 0 && harr[parent(i)] > harr[i])
@@ -32,6 +28,22 @@ void MinHeap::insertKey(int k)
         swap(&harr[i], &harr[parent(i)]);
         i = parent(i);
     }
+}
+
+// A utility function to swap two elements
+void swap(int *x, int *y)
+{
+    int temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
+// This function deletes key at index i. It first reduced value to minus
+// infinite, then calls extractMin()
+void MinHeap::deleteKey(int i)
+{
+    decreaseKey(i, INT_MIN);
+    extractMin();
 }
 
 // Decreases value of key at index 'i' to new_val.  It is assumed that
@@ -46,7 +58,6 @@ void MinHeap::decreaseKey(int i, int new_val)
     }
 }
 
-
 /**
  * Method to remove minimum element (or root) from min heap
  */
@@ -57,25 +68,17 @@ int MinHeap::extractMin()
     }
     if (heap_size == 1) {
         heap_size--;
-        return harr[0];
+        return harr[MIN_HEAP_POSITION];
     }
 
-    // Store the minimum vakue, and remove it from heap
-    int root = harr[0];
-    harr[0] = harr[heap_size-1];
+    // Store the minimum value, and remove it from heap
+    int root = harr[MIN_HEAP_POSITION];
+    harr[MIN_HEAP_POSITION] = harr[heap_size];
+    harr[heap_size] = INT_MIN; // clear the last item of heap
     heap_size--;
-    MinHeapify(0);
+    MinHeapify(MIN_HEAP_POSITION);
 
     return root;
-}
-
-
-// This function deletes key at index i. It first reduced value to minus
-// infinite, then calls extractMin()
-void MinHeap::deleteKey(int i)
-{
-    decreaseKey(i, INT_MIN);
-    extractMin();
 }
 
 // A recursive method to heapify a subtree with root at given index
@@ -95,12 +98,4 @@ void MinHeap::MinHeapify(int i)
         swap(&harr[i], &harr[smallest]);
         MinHeapify(smallest);
     }
-}
-
-// A utility function to swap two elements
-void swap(int *x, int *y)
-{
-    int temp = *x;
-    *x = *y;
-    *y = temp;
 }
