@@ -99,3 +99,12 @@ void MinHeap::MinHeapify(int i)
         MinHeapify(smallest);
     }
 }
+
+void MinHeap::print() {
+    std::cout << "MIN Heap = ";
+    for(int i = MIN_HEAP_POSITION; i <= size(); i++) {
+        std::cout << harr[i] << " ";
+    }
+    std::cout << "\n";
+}
+

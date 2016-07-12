@@ -4,73 +4,77 @@
 
 #include "DAryHeap.h"
 
-DAryHeap::DAryHeap(int capacity, int dNumChild) {
+#define INT_MIN -1
+#define FIRST_ELEMENT_INDEX 1
+#define FIRST_CHILD 1
+
+DAryHeap::DAryHeap(int dNumChild) {
     size = 0;
     this->dNumChild = dNumChild;
-    heap = new std::vector<int>((unsigned long) (capacity + 1));
-    std::fill(heap->begin(), heap->end(), -1);
+    heap = new std::vector<int>();
+
+    // Insert first (not usable) elements
+    for(int i = 0; i < FIRST_ELEMENT_INDEX; i++) {
+        heap->push_back(INT_MIN);
+    }
 }
 
 bool DAryHeap::isEmpty() {
     return size == 0;
 }
 
-bool DAryHeap::isFull() {
-    return size == heap->capacity();
-}
-
 void DAryHeap::clear() {
     size = 0;
-    std::fill(heap->begin(), heap->end(), -1);
 }
 
 void DAryHeap::push(int element) {
-    if(isFull()) {
-        return;
-    }
-
-    heap->at((unsigned long) size++) = element;
-    heapifyUp(size - 1);
+    heap->push_back(element);
+    size++;
+    heapifyUp(getLastElementIndex());
 }
 
 int DAryHeap::pop() {
     if (isEmpty()) {
-        return -1;
+        return INT_MIN;
     }
 
-    int keyItem = heap->at(0);
+    int keyItem = heap->at(FIRST_ELEMENT_INDEX);
 
-    heap->at(0) = heap->at((unsigned long) (size - 1));
-    heap->at((unsigned long) (size - 1)) = -1;
+    heap->at(FIRST_ELEMENT_INDEX) = heap->at((unsigned long) getLastElementIndex());
+    heap->at((unsigned long) getLastElementIndex()) = INT_MIN;
     size--;
-    heapifyDown(0);
+    heapifyDown(FIRST_ELEMENT_INDEX);
     return keyItem;
 }
 
 int DAryHeap::top() {
-    return heap->at(0);
+    return heap->at(FIRST_ELEMENT_INDEX);
 }
 
 void DAryHeap::print() {
-    std::cout << "Heap = ";
-    for(int i = 0; i < heap->capacity(); i++) {
+    std::cout << "DAry Heap = ";
+    for(int i = FIRST_ELEMENT_INDEX; i <= getLastElementIndex(); i++) {
         std::cout << heap->at((unsigned long) i) << " ";
     }
     std::cout << "\n";
 }
 
-int DAryHeap::parent(int elementIndex) {
-    return (elementIndex - 1) / dNumChild;
+int DAryHeap::getLastElementIndex() {
+    return (size + FIRST_ELEMENT_INDEX - 1);
 }
 
-int DAryHeap::kthChild(int elementIndex, int kChildIndex) {
-    return (dNumChild * elementIndex) + kChildIndex;
+int DAryHeap::parent(int elementIndex) {
+    return (((elementIndex - 2) + dNumChild) / dNumChild) + (FIRST_ELEMENT_INDEX - 1);
+}
+
+int DAryHeap::kthChild(int elementIndex, int kChild) {
+    return (dNumChild * (elementIndex - FIRST_ELEMENT_INDEX)) + kChild + FIRST_ELEMENT_INDEX;
 }
 
 void DAryHeap::heapifyUp(int elementIndex) {
     int tmp = heap->at((unsigned long) elementIndex);
     int parent;
-    while (elementIndex > 0 && tmp < heap->at((unsigned long) this->parent(elementIndex)))
+    while (elementIndex > FIRST_ELEMENT_INDEX && tmp < heap->at((unsigned long) this->parent(elementIndex)))
     {
         parent = this->parent(elementIndex);
         heap->at((unsigned long) elementIndex) = heap->at((unsigned long) parent);
@@ -82,29 +86,33 @@ void DAryHeap::heapifyUp(int elementIndex) {
 void DAryHeap::heapifyDown(int elementIndex) {
     int child;
     int tmp = heap->at((unsigned long) elementIndex);
-    while (kthChild(elementIndex, 1) < size)
+
+    // While elementIndex have at least one child...
+    while (kthChild(elementIndex, 1) <= getLastElementIndex())
     {
         child = minChild(elementIndex);
-        if (heap->at((unsigned long) child) < tmp)
+        if (heap->at((unsigned long) child) < tmp) {
             heap->at((unsigned long) elementIndex) = heap->at((unsigned long) child);
-        else
+        } else {
             break;
+        }
         elementIndex = child;
     }
     heap->at((unsigned long) elementIndex) = tmp;
 }
 
 int DAryHeap::minChild(int index) {
-    int firstChild = kthChild(index, 1);
+    int firstChild = kthChild(index, FIRST_CHILD);
     int bestChild = firstChild;
-    int k;
-    for(k = 1; ((k < dNumChild) && ((firstChild+k) < size)); k++) {
+    for(int k = 1; ((k < dNumChild) && ((firstChild+k) <= getLastElementIndex())); k++) {
         if (heap->at((unsigned long) (firstChild+k)) < heap->at((unsigned long) bestChild)) {
             bestChild = firstChild + k;
         }
     }
     return bestChild;
 }
+
+
 
 
 

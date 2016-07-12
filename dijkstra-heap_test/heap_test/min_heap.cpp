@@ -12,7 +12,7 @@ protected:
 };
 
 TEST_F(MinHeapFixture, insert_key){
-    MinHeap minHeap(11);
-    minHeap.insertKey(10);
+//    MinHeap minHeap(11);
+//    minHeap.insertKey(10);
     EXPECT_EQ(1, 10);
 }

@@ -57,6 +57,8 @@ public:
     int size() {
         return heap_size;
     }
+
+    void print();
 };
 
 #endif //DIJKSTRA_HEAP_HEAP_H
