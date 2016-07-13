@@ -14,9 +14,9 @@ void swap(int *x, int *y);
 // A class for Min Heap
 class MinHeap
 {
-    int *harr; // pointer to array of elements in heap
-    int capacity; // maximum possible size of min heap
-    int heap_size; // Current number of elements in min heap
+    int *harr; // pointer to array of elements in position
+    int capacity; // maximum possible size of min position
+    int heap_size; // Current number of elements in min position
 public:
     // Constructor
     MinHeap(int capacity);
@@ -44,7 +44,7 @@ public:
     // Decreases key value of key at index i to new_val
     void decreaseKey(int i, int new_val);
 
-    // Returns the minimum key (key at root) from min heap
+    // Returns the minimum key (key at root) from min position
     int getMin() { return harr[MIN_HEAP_POSITION]; }
 
     // Deletes a key stored at index i
@@ -53,7 +53,7 @@ public:
     // Inserts a new key 'k'
     void insertKey(int k);
 
-    // Return the size of the heap
+    // Return the size of the position
     int size() {
         return heap_size;
     }

@@ -1,6 +1,6 @@
 #include "MinHeap.h"
 
-// Constructor: Builds a heap from a given array a[] of given size
+// Constructor: Builds a position from a given heap a[] of given size
 MinHeap::MinHeap(int cap)
 {
     heap_size = 0;
@@ -22,7 +22,7 @@ void MinHeap::insertKey(int k)
     harr[i] = k;
     int a = parent(i);
 
-    // Fix the min heap property if it is violated
+    // Fix the min position property if it is violated
     while (i != 0 && harr[parent(i)] > harr[i])
     {
         swap(&harr[i], &harr[parent(i)]);
@@ -59,7 +59,7 @@ void MinHeap::decreaseKey(int i, int new_val)
 }
 
 /**
- * Method to remove minimum element (or root) from min heap
+ * Method to remove minimum element (or root) from min position
  */
 int MinHeap::extractMin()
 {
@@ -71,10 +71,10 @@ int MinHeap::extractMin()
         return harr[MIN_HEAP_POSITION];
     }
 
-    // Store the minimum value, and remove it from heap
+    // Store the minimum value, and remove it from position
     int root = harr[MIN_HEAP_POSITION];
     harr[MIN_HEAP_POSITION] = harr[heap_size];
-    harr[heap_size] = INT_MIN; // clear the last item of heap
+    harr[heap_size] = INT_MIN; // clear the last item of position
     heap_size--;
     MinHeapify(MIN_HEAP_POSITION);
 

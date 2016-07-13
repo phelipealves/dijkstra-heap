@@ -86,7 +86,7 @@ TEST_P(FooTest, HasBlahBlah) {
 //                               begin+step+step, ...}. The values do not
 //                               include end. step defaults to 1.
 //  Values(v1, v2, ..., vN)    - Yields values {v1, v2, ..., vN}.
-//  ValuesIn(container)        - Yields values from a C-style array, an STL
+//  ValuesIn(container)        - Yields values from a C-style heap, an STL
 //  ValuesIn(begin,end)          container, or an iterator range [begin, end).
 //  Bool()                     - Yields sequence {false, true}.
 //  Combine(g1, g2, ..., gN)   - Yields all combinations (the Cartesian product
@@ -252,9 +252,9 @@ internal::ParamGenerator<T> Range(T start, T end) {
 // a container.
 //
 // Synopsis:
-// ValuesIn(const T (&array)[N])
+// ValuesIn(const T (&heap)[N])
 //   - returns a generator producing sequences with elements from
-//     a C-style array.
+//     a C-style heap.
 // ValuesIn(const Container& container)
 //   - returns a generator producing sequences with elements from
 //     an STL-style container.
@@ -314,8 +314,8 @@ ValuesIn(ForwardIterator begin, ForwardIterator end) {
 }
 
 template <typename T, size_t N>
-internal::ParamGenerator<T> ValuesIn(const T (&array)[N]) {
-  return ValuesIn(array, array + N);
+internal::ParamGenerator<T> ValuesIn(const T (&heap)[N]) {
+  return ValuesIn(heap, heap + N);
 }
 
 template <class Container>

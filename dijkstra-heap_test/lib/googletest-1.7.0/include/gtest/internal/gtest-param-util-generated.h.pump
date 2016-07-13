@@ -63,7 +63,7 @@ internal::ParamGenerator<
 ValuesIn(ForwardIterator begin, ForwardIterator end);
 
 template <typename T, size_t N>
-internal::ParamGenerator<T> ValuesIn(const T (&array)[N]);
+internal::ParamGenerator<T> ValuesIn(const T (&heap)[N]);
 
 template <class Container>
 internal::ParamGenerator<typename Container::value_type> ValuesIn(
@@ -98,8 +98,8 @@ class ValueArray$i {
 
   template <typename T>
   operator ParamGenerator<T>() const {
-    const T array[] = {$for j, [[static_cast<T>(v$(j)_)]]};
-    return ValuesIn(array);
+    const T heap[] = {$for j, [[static_cast<T>(v$(j)_)]]};
+    return ValuesIn(heap);
   }
 
  private:

@@ -3,12 +3,16 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
+#include <HeapNode.h>
+#include <Utils.h>
 
 class DAryHeap {
 private:
     int dNumChild;
     int size;
-    std::vector<int> *heap;
+    std::vector<HeapNode*> *heap;
+    std::map<int, int> *position;
 
 public:
     /**
@@ -17,39 +21,52 @@ public:
     DAryHeap(int dNumChild);
 
     /**
-     * Returns true if the heap is empty or not otherwise.
+     * Returns true if the position is empty or not otherwise.
      */
     bool isEmpty();
 
     /**
-     * Clears the heap.
+     * Clears the position.
      */
     void clear();
 
-    /**
-     * Pushes some element into the heap.
-     */
-    void push(int element);
 
     /**
-     * Pops the top element from the heap.
-     * Returns the top element and after, removes it from the heap.
+     * Pushes some element into the position.
      */
-    int pop();
+    void simplePush(HeapNode *node);
+    void push(HeapNode *node);
 
     /**
-     * Returns the top element of heap.
+     * Pops the top element from the position.
+     * Returns the top element and after, removes it from the position.
      */
-    int top();
+    HeapNode pop();
 
     /**
-     * Prints the heap list.
+     * Returns the top element of position.
+     */
+    HeapNode top();
+
+    /**
+     * Returns position tree height
+     */
+    int treeHeight();
+
+    /**
+     * Prints the position list.
      */
     void print();
 
+    void setVertexDistance(int vertex, int distance);
+
+    bool isVertexInHeap(int vertex);
+
 private:
+    void initialize();
+
     /**
-     * Returns the index of last element of heap list.
+     * Returns the index of last element of position list.
      */
     int getLastElementIndex();
 
@@ -64,12 +81,12 @@ private:
     int kthChild(int elementIndex, int kChild);
 
     /**
-     * Ups some element to correctly heap position.
+     * Ups some element to correctly position position.
      */
     void heapifyUp(int elementIndex);
 
     /**
-     * Downs some element to correctly heap position.
+     * Downs some element to correctly position position.
      */
     void heapifyDown(int elementIndex);
 
@@ -77,6 +94,8 @@ private:
      * Returns the minimum child of some element.
      */
     int minChild(int index);
+
+    void moveNodePosition(HeapNode *node, int position);
 };
 
 
