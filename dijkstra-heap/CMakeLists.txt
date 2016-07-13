@@ -11,7 +11,9 @@ set(HEADER_FILE
         d-ary-heap/DAryHeap.h
         Utils.h
         dijkstra/Dijkstra.h
-        dijkstra/Graph.h
+        graph/Graph.h
+        graph/Edge.h
+        graph/builder/DimacsGraphBuilder.h
     )
 
 set(SOURCE_FILES
@@ -20,8 +22,8 @@ set(SOURCE_FILES
         d-ary-heap/DAryHeap.cpp
         Utils.cpp
         dijkstra/Dijkstra.cpp
-        dijkstra/Graph.cpp
-        dijkstra/Edge.h)
+        graph/Graph.cpp
+        graph/builder/DimacsGraphBuilder.cpp)
 
 add_library(dijkstra-heap STATIC ${SOURCE_FILES} ${HEADER_FILES})
 

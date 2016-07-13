@@ -163,7 +163,3 @@ bool DAryHeap::isVertexInHeap(int vertex) {
 int DAryHeap::getTreeHeight() {
     return (int)(isEmpty() ? -1 : (Utils::log_x(dNumChild - 1, dNumChild) + Utils::log_x(size, dNumChild)));
 }
-
-
-
-

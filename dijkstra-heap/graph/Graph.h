@@ -7,12 +7,13 @@
 
 class Graph {
 private:
+    bool undirected;
     int numVertices;
     std::vector<int> *vertices;
     std::map<int, std::vector<Edge*>> *vertexEdges;
 
 public:
-    Graph();
+    Graph(bool undirected);
     int getNumVertices();
     std::vector<int> getVertices();
     std::vector<Edge*>* getVertexEdges(int vertex);

@@ -5,7 +5,7 @@
 #include <climits>
 #include <map>
 #include <AbstractHeap.h>
-#include "Graph.h"
+#include "graph/Graph.h"
 
 class Dijkstra {
 private:

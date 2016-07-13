@@ -6,6 +6,11 @@ Dijkstra::Dijkstra(Graph *graph, AbstractHeap *heap, int initialVertex) {
     this->initialVertex = initialVertex;
     vertexDistances = new std::map<int, int>();
 
+    if(!graph->isVertexInGraph(initialVertex)) {
+        std::cout << "INITIAL VERTEX " << initialVertex << " NOT EXISTS IN GRAPH" << std::endl;
+        return;
+    }
+
     initialize();
 }
 
@@ -20,6 +25,7 @@ void Dijkstra::initialize() {
 
     (*this->vertexDistances)[initialVertex] = 0;
     heap->setVertexDistance(initialVertex, 0);
+
 }
 
 void Dijkstra::run() {
