@@ -1,74 +1,24 @@
 #ifndef DIJKSTRA_HEAP_DARYHEAP_H
 #define DIJKSTRA_HEAP_DARYHEAP_H
 
+#include <limits.h>
 #include <iostream>
-#include <vector>
-#include <map>
 #include <HeapNode.h>
 #include <Utils.h>
+#include <AbstractHeap.h>
 
-class DAryHeap {
+#define FIRST_ELEMENT_INDEX 1
+#define FIRST_CHILD 1
+
+class DAryHeap: public AbstractHeap
+{
 private:
     int dNumChild;
-    int size;
-    std::vector<HeapNode*> *heap;
-    std::map<int, int> *position;
-
-public:
-    /**
-     * Constructor method.
-     */
-    DAryHeap(int dNumChild);
 
     /**
-     * Returns true if the position is empty or not otherwise.
+     * Initializes the heap.
      */
-    bool isEmpty();
-
-    /**
-     * Clears the position.
-     */
-    void clear();
-
-
-    /**
-     * Pushes some element into the position.
-     */
-    void simplePush(HeapNode *node);
-    void push(HeapNode *node);
-
-    /**
-     * Pops the top element from the position.
-     * Returns the top element and after, removes it from the position.
-     */
-    HeapNode pop();
-
-    /**
-     * Returns the top element of position.
-     */
-    HeapNode top();
-
-    /**
-     * Returns position tree height
-     */
-    int treeHeight();
-
-    /**
-     * Prints the position list.
-     */
-    void print();
-
-    void setVertexDistance(int vertex, int distance);
-
-    bool isVertexInHeap(int vertex);
-
-private:
     void initialize();
-
-    /**
-     * Returns the index of last element of position list.
-     */
-    int getLastElementIndex();
 
     /**
      * Returns the index of parent element.
@@ -95,7 +45,41 @@ private:
      */
     int minChild(int index);
 
+    /**
+     * Modes node to some position in heap.
+     */
     void moveNodePosition(HeapNode *node, int position);
+
+protected:
+    /** Override methods **/
+    virtual int getInitialIndex() override;
+
+    virtual int getLastIndex() override;
+
+public:
+    /**
+     * Constructor method.
+     */
+    DAryHeap(int dNumChild);
+
+    /** Override methods **/
+    virtual bool isEmpty() override;
+
+    virtual void clear() override;
+
+    virtual void simplePush(HeapNode *node) override;
+
+    virtual void push(HeapNode *node) override;
+
+    virtual HeapNode pop() override;
+
+    virtual HeapNode top() override;
+
+    virtual void setVertexDistance(int vertex, int distance) override;
+
+    virtual bool isVertexInHeap(int vertex) override;
+
+    virtual int getTreeHeight() override;
 };
 
 
