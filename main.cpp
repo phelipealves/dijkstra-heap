@@ -2,18 +2,23 @@
 #include <graph/Graph.h>
 #include <dijkstra/Dijkstra.h>
 #include <graph/builder/DimacsGraphBuilder.h>
+#include <graph/builder/GraphBuilderFactory.h>
 
-#define DIMACS_GRAPH_FILE_PATH  "/home/bruno/Downloads/USA-road-d.NY.gr"
 #define DARYHEAP_D  4
 #define DIJKSTRA_START_NODE 1
 
 using namespace std;
 
-int main()
+int main(int argc, char **argv)
 {
+    string driver = (strcmp(argv[1], "-d") == 0) ? argv[2] : "dimacs";
+    GraphBuilder *builder = GraphBuilderFactory::getInstance(driver);
+
     clock_t start_time = clock();
-    Graph *graph = DimacsGraphBuilder::build(DIMACS_GRAPH_FILE_PATH);
+    Graph *graph = builder->build();
     clock_t graph_load_time = clock();
+    cout << "Finished graph creation..." << endl <<
+            "Graph load time: " << graph_load_time - start_time << endl << endl;
 
     Dijkstra *dijkstra = new Dijkstra(graph, new DAryHeap(DARYHEAP_D), DIJKSTRA_START_NODE);
     clock_t dijkstra_start_time = clock();

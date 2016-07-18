@@ -23,7 +23,7 @@ set(SOURCE_FILES
         Utils.cpp
         dijkstra/Dijkstra.cpp
         graph/Graph.cpp
-        graph/builder/DimacsGraphBuilder.cpp)
+        graph/builder/DimacsGraphBuilder.cpp graph/builder/GraphBuilder.h graph/builder/GraphBuilderFactory.cpp graph/builder/GraphBuilderFactory.h)
 
 add_library(dijkstra-heap STATIC ${SOURCE_FILES} ${HEADER_FILES})
 

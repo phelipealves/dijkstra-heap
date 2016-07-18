@@ -7,10 +7,12 @@
 #include <iostream>
 #include <cstring>
 #include <graph/Graph.h>
+#include "GraphBuilder.h"
 
-class DimacsGraphBuilder {
+class DimacsGraphBuilder: public GraphBuilder
+{
 public:
-    static Graph* build(std::string filePath);
+    virtual Graph *build() override;
 };
 
 
