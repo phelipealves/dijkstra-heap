@@ -20,6 +20,7 @@ int main(int argc, char **argv)
     cout << "Finished graph creation..." << endl <<
             "Graph load time: " << graph_load_time - start_time << endl << endl;
 
+
     Dijkstra *dijkstra = new Dijkstra(graph, new DAryHeap(DARYHEAP_D), DIJKSTRA_START_NODE);
     clock_t dijkstra_start_time = clock();
     dijkstra->run();
