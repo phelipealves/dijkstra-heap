@@ -1,10 +1,8 @@
 #include <d-ary-heap/DAryHeap.h>
-#include <graph/Graph.h>
 #include <dijkstra/Dijkstra.h>
-#include <graph/builder/DimacsGraphBuilder.h>
 #include <graph/builder/GraphBuilderFactory.h>
 
-#define DARYHEAP_D  4
+#define DARYHEAP_D  2
 #define DIJKSTRA_START_NODE 1
 
 using namespace std;
@@ -20,9 +18,25 @@ int main(int argc, char **argv)
     cout << "Finished graph creation..." << endl <<
             "Graph load time: " << graph_load_time - start_time << endl << endl;
 
+    // TEST GRAPH
+//    graph = new Graph(true, 0, 8);
+//    graph->addEdge(0, 1, 4);
+//    graph->addEdge(0, 7, 8);
+//    graph->addEdge(1, 2, 8);
+//    graph->addEdge(1, 7, 11);
+//    graph->addEdge(2, 3, 7);
+//    graph->addEdge(2, 8, 2);
+//    graph->addEdge(2, 5, 4);
+//    graph->addEdge(3, 4, 9);
+//    graph->addEdge(3, 5, 14);
+//    graph->addEdge(4, 5, 10);
+//    graph->addEdge(5, 6, 2);
+//    graph->addEdge(6, 7, 1);
+//    graph->addEdge(6, 8, 6);
+//    graph->addEdge(7, 8, 7);
 
-    Dijkstra *dijkstra = new Dijkstra(graph, new DAryHeap(DARYHEAP_D), DIJKSTRA_START_NODE);
     clock_t dijkstra_start_time = clock();
+    Dijkstra *dijkstra = new Dijkstra(graph, new DAryHeap(DARYHEAP_D, graph), DIJKSTRA_START_NODE);
     dijkstra->run();
     clock_t dijkstra_end_time = clock();
 

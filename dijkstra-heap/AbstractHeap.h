@@ -4,12 +4,13 @@
 #include <map>
 #include <vector>
 #include "HeapNode.h"
+#include "graph/Vertex.h"
 
 class AbstractHeap {
 protected:
     int size;
-    std::vector<HeapNode*> *heap;
-    std::map<int, int> *position;
+    std::vector<Vertex*> *heap;
+    std::vector<int> *positions;
 
     /**
      * Returns the index of first element in heap.
@@ -27,27 +28,16 @@ public:
      */
     virtual bool isEmpty() = 0;
 
-     /**
-     * Clears the position.
-     */
-    virtual void clear() = 0;
-
-    /**
-     * Pushes some element into the position.
-     */
-    virtual void simplePush(HeapNode *node) = 0;
-    virtual void push(HeapNode *node) = 0;
-
     /**
      * Pops the top element from the position.
      * Returns the top element and after, removes it from the position.
      */
-    virtual HeapNode pop() = 0;
+    virtual Vertex* pop() = 0;
 
     /**
      * Returns the top element of position.
      */
-    virtual HeapNode top() = 0;
+    virtual Vertex* top() = 0;
 
     /**
      * Sets the vertex distance.
@@ -65,25 +55,9 @@ public:
     virtual int getTreeHeight() = 0;
 
     /**
-     * Prints the heap list.
+     * Returns heap size
      */
-    void print() {
-        std::cout << "Heap:" << std::endl;
-        HeapNode *node;
-        for(int i = getInitialIndex(); i <= getLastIndex(); i++) {
-            node = heap->at((unsigned long) i);
-            std::cout << node->getDistance() << "\t";
-        }
-        std::cout << std::endl;
-        std::cout.flush();
-
-        for(int i = getInitialIndex(); i <= getLastIndex(); i++) {
-            node = heap->at((unsigned long) i);
-            std::cout << node->getVertex() << "\t";
-        }
-        std::cout << std::endl;
-        std::cout.flush();
-    }
+    virtual int getSize() = 0;
 };
 
 

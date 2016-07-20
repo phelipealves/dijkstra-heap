@@ -10,7 +10,6 @@
 class Dijkstra {
 private:
     Graph *graph;
-    std::map<int, int> *vertexDistances;
     AbstractHeap *heap;
     int initialVertex;
 

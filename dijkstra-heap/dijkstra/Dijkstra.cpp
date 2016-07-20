@@ -4,7 +4,6 @@ Dijkstra::Dijkstra(Graph *graph, AbstractHeap *heap, int initialVertex) {
     this->graph = graph;
     this->heap = heap;
     this->initialVertex = initialVertex;
-    vertexDistances = new std::map<int, int>();
 
     if(!graph->isVertexInGraph(initialVertex)) {
         std::cout << "INITIAL VERTEX " << initialVertex << " NOT EXISTS IN GRAPH" << std::endl;
@@ -15,17 +14,8 @@ Dijkstra::Dijkstra(Graph *graph, AbstractHeap *heap, int initialVertex) {
 }
 
 void Dijkstra::initialize() {
-    std::vector<int> vertices = graph->getVertices();
-    int vertex;
-    for (int i = 0; i < graph->getNumVertices(); ++i) {
-        vertex = vertices.at((unsigned long) i);
-        (*this->vertexDistances)[vertex] = INT_MAX;
-        heap->simplePush(new HeapNode(vertex, INT_MAX));
-    }
-
-    (*this->vertexDistances)[initialVertex] = 0;
+    graph->getVertex(this->initialVertex)->setDistance(0);
     heap->setVertexDistance(initialVertex, 0);
-
 }
 
 void Dijkstra::run() {
@@ -33,32 +23,33 @@ void Dijkstra::run() {
     // whose shortest distance is not yet finalized.
     while (!heap->isEmpty())
     {
-        // Extract the vertex with minimum distance value
-        HeapNode node = heap->pop();
-        int vertex = node.getVertex();
-        std::vector<Edge*>* vertexEdges = graph->getVertexEdges(vertex);
+        Vertex* vertex = heap->pop();
+//        std::cout << heap->getSize() << std::endl;
+
+        std::vector<Edge*>* vertexEdges = vertex->getEdges();
         if(vertexEdges->empty()) {
             continue;
         }
 
         // Traverse through all adjacent vertices of u (the extracted
-        // vertex) and update their distance values
+        // vertexIndex) and update their distance values
         Edge* edge = vertexEdges->back();
         int edgeDestination, edgeWeight, vertexDistance, destinationDistance;
         while (!vertexEdges->empty())
         {
             edgeDestination = edge->getDestinationVertex();
             edgeWeight = edge->getWeight();
-            vertexDistance = this->vertexDistances->at(vertex);
-            destinationDistance = this->vertexDistances->at(edgeDestination);
+            Vertex* destinationVertex = graph->getVertex(edgeDestination);
+            vertexDistance = vertex->getDistance();
+            destinationDistance = destinationVertex->getDistance();
 
             // If shortest distance to v is not finalized yet, and distance to v
             // through u is less than its previously calculated distance
             if (heap->isVertexInHeap(edgeDestination) && vertexDistance != INT_MAX &&
                     edgeWeight + vertexDistance < destinationDistance)
             {
-                (*this->vertexDistances)[edgeDestination] = vertexDistance + edgeWeight;
-                heap->setVertexDistance(edgeDestination, this->vertexDistances->at(edgeDestination));
+                destinationVertex->setDistance(vertexDistance + edgeWeight);
+                heap->setVertexDistance(edgeDestination, destinationVertex->getDistance());
             }
 
             vertexEdges->pop_back();
@@ -69,10 +60,10 @@ void Dijkstra::run() {
 
 void Dijkstra::print() {
     std::cout << "Vertex Distance from Source" << std::endl;
-    std::vector<int> vertices = graph->getVertices();
-    int vertex;
-    for (int i = 0; i < graph->getNumVertices(); ++i) {
-        vertex = vertices.at((unsigned long) i);
-        std::cout << vertex << "\t\t" << vertexDistances->at(vertex) << std::endl;
+    int maxVector = graph->getInitialVertex() + graph->getNumVertices();
+    int vertexNum;
+    for (int i = 0; i < maxVector; ++i) {
+        vertexNum = i + graph->getInitialVertex();
+        std::cout << vertexNum << "\t\t" << graph->getVertex(vertexNum)->getDistance() << std::endl;
     }
 }

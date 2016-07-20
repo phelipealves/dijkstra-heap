@@ -1,17 +1,19 @@
 #include "DAryHeap.h"
 
-DAryHeap::DAryHeap(int dNumChild) {
-    size = 0;
+DAryHeap::DAryHeap(int dNumChild, Graph* graph) {
     this->dNumChild = dNumChild;
-    position = new std::map<int, int>();
-    heap = new std::vector<HeapNode*>();
-    initialize();
-}
 
-void DAryHeap::initialize() {
-    // Insert firsts (not usable) elements
-    for(int i = 0; i < getInitialIndex(); i++) {
-        heap->push_back(new HeapNode(INT_MIN, INT_MIN));
+    int numVertices = graph->getNumVertices();
+    this->heap = new std::vector<Vertex*>((unsigned long) (numVertices + INITIAL_INDEX + 1));
+    this->positions = new std::vector<int>((unsigned long) (numVertices + 1));
+    size = numVertices;
+    initialVertexId = graph->getInitialVertex();
+
+    // initialize heap based on vertices
+    std::vector<Vertex*> *graphVertices = graph->getVertices();
+    for(int i = 0; i < numVertices; i++) {
+        (*heap)[i+getInitialIndex()] = (*graphVertices)[i];
+        (*positions)[i] = i+getInitialIndex();
     }
 }
 
@@ -23,74 +25,72 @@ int DAryHeap::kthChild(int elementIndex, int kChild) {
     return (dNumChild * (elementIndex - getInitialIndex())) + kChild + getInitialIndex();
 }
 
-void DAryHeap::heapifyUp(int elementIndex) {
-    if(isEmpty()) {
-        return;
-    }
-
-    HeapNode* tmp = heap->at((unsigned long) elementIndex);
-    HeapNode* parent = heap->at((unsigned long) this->parent(elementIndex));
-    int auxPosition;
-
-    while (elementIndex > getInitialIndex() && HeapNode::compareMinimum(*tmp, *parent))
-    {
-        auxPosition = position->at(parent->getVertex());
-        moveNodePosition(parent, elementIndex);
-        elementIndex = auxPosition;
-
-        auxPosition = this->parent(auxPosition);
-        if(auxPosition < getInitialIndex()) {
-            break;
-        }
-        parent = heap->at((unsigned long) auxPosition);
-    }
-    moveNodePosition(tmp, elementIndex);
+int DAryHeap::getVertexPosition(int vertex) {
+    return (*positions)[vertex-initialVertexId];
 }
 
-void DAryHeap::heapifyDown(int elementIndex) {
-    if(isEmpty())  {
-        return;
-    }
+void DAryHeap::switchVerticesPositions(int vertex1, int vertex2) {
+    int vertex1Pos = getVertexPosition(vertex1);
+    int vertex2Pos = getVertexPosition(vertex2);
+    (*positions)[vertex1-initialVertexId] = vertex2Pos;
+    (*positions)[vertex2-initialVertexId] = vertex1Pos;
 
-    HeapNode* tmp = heap->at((unsigned long) elementIndex);
-    HeapNode* minChild;
-    int minChildIndex;
+    Vertex *aux = (*heap)[vertex1Pos];
+    (*heap)[vertex1Pos] = (*heap)[vertex2Pos];
+    (*heap)[vertex2Pos] = aux;
+}
+
+void DAryHeap::heapifyUp(int vertex) {
+    int vertexPosition = getVertexPosition(vertex);
+    int parentPosition = this->parent(vertexPosition);
+    Vertex* vertexObj = (*heap)[vertexPosition];
+    Vertex* parentObj = (*heap)[parentPosition];
+
+    while (vertexPosition > getInitialIndex() && Vertex::compareMinimum(vertexObj, parentObj))
+    {
+        switchVerticesPositions(parentObj->getId(), vertexObj->getId());
+        vertexPosition = parentPosition;
+        parentPosition = this->parent(vertexPosition);
+        vertexObj = (*heap)[vertexPosition];
+        parentObj = (*heap)[parentPosition];
+    }
+}
+
+void DAryHeap::heapifyDown(int vertex) {
+    int vertexPosition = getVertexPosition(vertex);
+    Vertex* vertexObj = (*heap)[vertexPosition];
+    int minChildPosition;
+    Vertex* minChild;
 
     // While elementIndex have at least one child...
-    while (kthChild(elementIndex, 1) <= getLastIndex())
+    while (kthChild(vertexPosition, FIRST_CHILD) <= getLastIndex())
     {
-        minChildIndex = this->minChild(elementIndex);
-        minChild = heap->at((unsigned long) minChildIndex);
-        if (HeapNode::compareMinimum(*minChild, *tmp)) {
-            moveNodePosition(minChild, elementIndex);
-        } else {
+        minChildPosition = this->minChild(vertexPosition);
+        minChild = (*heap)[minChildPosition];
+        if(!Vertex::compareMinimum(minChild, vertexObj)) {
             break;
         }
-        elementIndex = minChildIndex;
+
+        switchVerticesPositions(minChild->getId(), vertexObj->getId());
+        vertexPosition = minChildPosition;
+        vertexObj = (*heap)[vertexPosition];
     }
-    moveNodePosition(tmp, elementIndex);
 }
 
 int DAryHeap::minChild(int index) {
     int firstChild = kthChild(index, FIRST_CHILD);
     int bestChild = firstChild;
     for(int k = 1; ((k < dNumChild) && ((firstChild+k) <= getLastIndex())); k++) {
-        if (HeapNode::compareMinimum(*heap->at((unsigned long) (firstChild+k)),
-                                     *heap->at((unsigned long) bestChild))) {
+        if (Vertex::compareMinimum((*heap)[(firstChild+k)], (*heap)[bestChild])) {
             bestChild = firstChild + k;
         }
     }
     return bestChild;
 }
 
-void DAryHeap::moveNodePosition(HeapNode *node, int position) {
-    heap->at((unsigned long) position) = node;
-    (*this->position)[node->getVertex()] = position;
-}
-
 /** Override methods **/
 int DAryHeap::getInitialIndex() {
-    return FIRST_ELEMENT_INDEX;
+    return INITIAL_INDEX;
 }
 
 int DAryHeap::getLastIndex() {
@@ -101,65 +101,49 @@ bool DAryHeap::isEmpty() {
     return size == 0;
 }
 
-void DAryHeap::clear() {
-    size = 0;
-    position->clear();
-    heap->clear();
-    initialize();
-}
-
-void DAryHeap::simplePush(HeapNode *node) {
-    heap->push_back(node);
-    size++;
-    int nodePosition = getLastIndex();
-    (*this->position)[node->getVertex()] = nodePosition;
-}
-
-void DAryHeap::push(HeapNode *node) {
-    simplePush(node);
-    heapifyUp(getLastIndex());
-}
-
-HeapNode DAryHeap::pop() {
+Vertex* DAryHeap::pop() {
     if (isEmpty()) {
-        return HeapNode(INT_MIN, INT_MIN);
+        return nullptr;
     }
 
-    HeapNode* topNode = heap->at((unsigned long) getInitialIndex());
-    HeapNode* lastNode = heap->at((unsigned long) getLastIndex());
-    moveNodePosition(lastNode, getInitialIndex());
-
-    heap->erase(heap->begin()+ getLastIndex());
-    position->erase(topNode->getVertex());
+    Vertex* topNode = (*heap)[getInitialIndex()];
+    Vertex* lastNode = (*heap)[getLastIndex()];
+    switchVerticesPositions(lastNode->getId(), topNode->getId());
+    (*positions)[topNode->getId()-initialVertexId] = getInitialIndex() - 1;
     size--;
-    heapifyDown(getInitialIndex());
-    return *topNode;
+
+    if(!isEmpty()) {
+        heapifyDown(lastNode->getId());
+    }
+    return topNode;
 }
 
-HeapNode DAryHeap::top() {
-    return *heap->at((unsigned long) getInitialIndex());
+Vertex * DAryHeap::top() {
+    return (*heap)[getInitialIndex()];
 }
 
 void DAryHeap::setVertexDistance(int vertex, int distance) {
-    // Get the index of v in  heap array
-    int vertexPosition = position->at(vertex);
-
-    // Get the node and update its dist value
-    HeapNode* node = heap->at((unsigned long) vertexPosition);
+    int vertexPosition = getVertexPosition(vertex);
+    Vertex* node = (*heap)[vertexPosition];
     node->setDistance(distance);
+
     int minChildIndex = this->minChild(vertexPosition);
-    if(minChildIndex <= getLastIndex() &&
-       HeapNode::compareMinimum(*heap->at((unsigned long) minChildIndex), *node)) {
-        heapifyDown(vertexPosition);
+    if(minChildIndex <= getLastIndex() && Vertex::compareMinimum((*heap)[minChildIndex], node)) {
+        heapifyDown(vertex);
     } else {
-        heapifyUp(vertexPosition);
+        heapifyUp(vertex);
     }
 }
 
 bool DAryHeap::isVertexInHeap(int vertex) {
-    return position->count(vertex) == 1;
+    return (vertex >= initialVertexId && vertex < (initialVertexId + positions->size() - 1) &&
+            (*positions)[vertex-initialVertexId] >= getInitialIndex());
 }
 
 int DAryHeap::getTreeHeight() {
     return (int)(isEmpty() ? -1 : (Utils::log_x(dNumChild - 1, dNumChild) + Utils::log_x(size, dNumChild)));
+}
+
+int DAryHeap::getSize() {
+    return size;
 }

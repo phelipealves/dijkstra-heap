@@ -3,22 +3,19 @@
 
 #include <limits.h>
 #include <iostream>
-#include <HeapNode.h>
 #include <Utils.h>
 #include <AbstractHeap.h>
+#include <graph/Vertex.h>
+#include <graph/Graph.h>
 
-#define FIRST_ELEMENT_INDEX 1
+#define INITIAL_INDEX 1
 #define FIRST_CHILD 1
 
 class DAryHeap: public AbstractHeap
 {
 private:
     int dNumChild;
-
-    /**
-     * Initializes the heap.
-     */
-    void initialize();
+    int initialVertexId;
 
     /**
      * Returns the index of parent element.
@@ -33,12 +30,12 @@ private:
     /**
      * Ups some element to correctly position position.
      */
-    void heapifyUp(int elementIndex);
+    void heapifyUp(int vertex);
 
     /**
      * Downs some element to correctly position position.
      */
-    void heapifyDown(int elementIndex);
+    void heapifyDown(int vertex);
 
     /**
      * Returns the minimum child of some element.
@@ -46,9 +43,14 @@ private:
     int minChild(int index);
 
     /**
-     * Modes node to some position in heap.
+     * Switch vertices positions
      */
-    void moveNodePosition(HeapNode *node, int position);
+    void switchVerticesPositions(int vertex1, int vertex2);
+
+    /**
+     * Gets the vertex position in heap.
+     */
+    int getVertexPosition(int vertex);
 
 protected:
     /** Override methods **/
@@ -60,26 +62,22 @@ public:
     /**
      * Constructor method.
      */
-    DAryHeap(int dNumChild);
+    DAryHeap(int dNumChild, Graph* graph);
 
     /** Override methods **/
     virtual bool isEmpty() override;
 
-    virtual void clear() override;
+    virtual Vertex* pop() override;
 
-    virtual void simplePush(HeapNode *node) override;
-
-    virtual void push(HeapNode *node) override;
-
-    virtual HeapNode pop() override;
-
-    virtual HeapNode top() override;
+    virtual Vertex* top() override;
 
     virtual void setVertexDistance(int vertex, int distance) override;
 
     virtual bool isVertexInHeap(int vertex) override;
 
     virtual int getTreeHeight() override;
+
+    virtual int getSize() override;
 };
 
 
