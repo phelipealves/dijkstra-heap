@@ -147,3 +147,34 @@ int DAryHeap::getTreeHeight() {
 int DAryHeap::getSize() {
     return size;
 }
+
+void DAryHeap::insert(Vertex *vertex) {
+    // is full heap
+    if (heap->size() == size) {
+        return;
+    }
+
+    (*heap)[size++] = vertex;
+    heapifyUp(size);
+}
+
+void DAryHeap::simplePush(Vertex *node) {
+    heap->push_back(node);
+    size++;
+    int nodePosition = getLastIndex();
+    (*this->positions)[node->getId()] = nodePosition;
+}
+
+void DAryHeap::push(Vertex *node) {
+    simplePush(node);
+    heapifyUp(getLastIndex());
+}
+
+int DAryHeap::getTreeHeight(int size, int dNumChild) {
+    return (int)((size == 0) ? -1 : (Utils::log_x(dNumChild - 1, dNumChild) + Utils::log_x(size, dNumChild)));
+}
+
+int DAryHeap::getDNumChild() {
+    return dNumChild;
+}
+

@@ -1,6 +1,8 @@
+#include <Utils.h>
+#include <d-ary-heap/DAryHeap.h>
 #include "Dijkstra.h"
 
-Dijkstra::Dijkstra(Graph *graph, AbstractHeap *heap, int initialVertex) {
+Dijkstra::Dijkstra(Graph *graph, AbstractHeap *heap, int initialVertex, std::string traceName) {
     this->graph = graph;
     this->heap = heap;
     this->initialVertex = initialVertex;
@@ -11,6 +13,7 @@ Dijkstra::Dijkstra(Graph *graph, AbstractHeap *heap, int initialVertex) {
     }
 
     initialize();
+    logFile.open (std::string("dijkstra_out_").append(traceName));
 }
 
 void Dijkstra::initialize() {
@@ -21,10 +24,14 @@ void Dijkstra::initialize() {
 void Dijkstra::run() {
     // In the following loop, min position contains all nodes
     // whose shortest distance is not yet finalized.
+    int iteration = 0;
+    int numHeap = 1;
     while (!heap->isEmpty())
     {
+        DAryHeap* daryHeap = dynamic_cast<DAryHeap*>(heap);
+        logFile << ++iteration  << "\t" << numHeap << "\t" << DAryHeap::getTreeHeight(numHeap, daryHeap->getDNumChild()) << std::endl;
         Vertex* vertex = heap->pop();
-//        std::cout << heap->getSize() << std::endl;
+        numHeap--;
 
         std::vector<Edge*>* vertexEdges = vertex->getEdges();
         if(vertexEdges->empty()) {
@@ -48,6 +55,9 @@ void Dijkstra::run() {
             if (heap->isVertexInHeap(edgeDestination) && vertexDistance != INT_MAX &&
                     edgeWeight + vertexDistance < destinationDistance)
             {
+                if (destinationDistance == INT_MAX) {
+                    numHeap++;
+                }
                 destinationVertex->setDistance(vertexDistance + edgeWeight);
                 heap->setVertexDistance(edgeDestination, destinationVertex->getDistance());
             }
@@ -56,14 +66,17 @@ void Dijkstra::run() {
             edge = vertexEdges->back();
         }
     }
+    logFile.close();
 }
 
 void Dijkstra::print() {
     std::cout << "Vertex Distance from Source" << std::endl;
-    int maxVector = graph->getInitialVertex() + graph->getNumVertices();
+    std::cout << graph->getInitialVertex();
     int vertexNum;
-    for (int i = 0; i < maxVector; ++i) {
+    for (int i = 0; i < graph->getNumVertices(); ++i) {
         vertexNum = i + graph->getInitialVertex();
         std::cout << vertexNum << "\t\t" << graph->getVertex(vertexNum)->getDistance() << std::endl;
     }
 }
+
+

@@ -78,6 +78,16 @@ public:
     virtual int getTreeHeight() override;
 
     virtual int getSize() override;
+
+    virtual void insert(Vertex *vertex) override;
+
+    virtual void simplePush(Vertex *node) override;
+
+    virtual void push(Vertex *node) override ;
+
+    static int getTreeHeight(int size, int dNumChild);
+
+    int getDNumChild();
 };
 
 

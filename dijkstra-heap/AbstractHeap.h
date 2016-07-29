@@ -3,7 +3,6 @@
 
 #include <map>
 #include <vector>
-#include "HeapNode.h"
 #include "graph/Vertex.h"
 
 class AbstractHeap {
@@ -40,6 +39,11 @@ public:
     virtual Vertex* top() = 0;
 
     /**
+     * Insert a new vertex
+     */
+    virtual void insert(Vertex* vertex) = 0;
+
+    /**
      * Sets the vertex distance.
      */
     virtual void setVertexDistance(int vertex, int distance) = 0;
@@ -58,6 +62,10 @@ public:
      * Returns heap size
      */
     virtual int getSize() = 0;
+
+    virtual void simplePush(Vertex *node) = 0;
+
+    virtual void push(Vertex *node) = 0;
 };
 
 

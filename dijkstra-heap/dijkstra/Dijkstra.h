@@ -5,6 +5,7 @@
 #include <climits>
 #include <map>
 #include <AbstractHeap.h>
+#include <fstream>
 #include "graph/Graph.h"
 
 class Dijkstra {
@@ -12,11 +13,12 @@ private:
     Graph *graph;
     AbstractHeap *heap;
     int initialVertex;
+    std::ofstream logFile;
 
     void initialize();
 
 public:
-    Dijkstra(Graph *graph, AbstractHeap *heap, int initialVertex);
+    Dijkstra(Graph *graph, AbstractHeap *heap, int initialVertex, std::string traceName);
     void run();
     void print();
 };

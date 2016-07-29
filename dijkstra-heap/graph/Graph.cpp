@@ -4,6 +4,7 @@ Graph::Graph(bool undirected, int initialVertex, int finalVertex) {
     this->undirected = undirected;
     this->initialVertex = initialVertex;
     numVertices = (finalVertex - initialVertex) + 1;
+    numEdges = 0;
 
     vertices = new std::vector<Vertex*>((unsigned long) (numVertices + 1));
     addVertex(initialVertex, finalVertex);
@@ -15,6 +16,10 @@ int Graph::getInitialVertex() {
 
 int Graph::getNumVertices() {
     return numVertices;
+}
+
+long Graph::getNumEdges() {
+    return numEdges;
 }
 
 std::vector<Vertex *> *Graph::getVertices() {
@@ -47,6 +52,7 @@ void Graph::addEdge(int sourceVertex, Edge *edge) {
         vertexEdges = (*this->vertices)[edge->getDestinationVertex()-initialVertex]->getEdges();
         vertexEdges->push_back(backEdge);
     }
+    numEdges++;
 }
 
 void Graph::addEdge(int sourceVertex, int destinationVertex, int weight) {

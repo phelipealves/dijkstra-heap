@@ -1,53 +1,119 @@
 #include <d-ary-heap/DAryHeap.h>
 #include <dijkstra/Dijkstra.h>
 #include <graph/builder/GraphBuilderFactory.h>
-
-#define DARYHEAP_D  2
-#define DIJKSTRA_START_NODE 1
+#include <cputimer/CPUTimer.h>
+#include <algorithm>
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
-    string driver = (strcmp(argv[1], "-d") == 0) ? argv[2] : "dimacs";
-    GraphBuilder *builder = GraphBuilderFactory::getInstance(driver);
+    /* initialize random seed: */
+    srand ((unsigned int) time(NULL));
 
-    clock_t start_time = clock();
+    int numExecutions = (strcmp(argv[1], "-k") == 0) ? atoi(argv[2]) : 1;
+    int dAryHeapD = (strcmp(argv[3], "-d") == 0) ? atoi(argv[4]) : 2;
+    GraphBuilder *builder = GraphBuilderFactory::getInstance("dimacs");
+
+    CPUTimer builder_time;
+    builder_time.start();
+
     Graph *graph = builder->build();
-    clock_t graph_load_time = clock();
-    cout << "Finished graph creation..." << endl <<
-            "Graph load time: " << graph_load_time - start_time << endl << endl;
+    builder_time.stop();
 
-    // TEST GRAPH
-//    graph = new Graph(true, 0, 8);
-//    graph->addEdge(0, 1, 4);
-//    graph->addEdge(0, 7, 8);
-//    graph->addEdge(1, 2, 8);
-//    graph->addEdge(1, 7, 11);
-//    graph->addEdge(2, 3, 7);
-//    graph->addEdge(2, 8, 2);
-//    graph->addEdge(2, 5, 4);
-//    graph->addEdge(3, 4, 9);
-//    graph->addEdge(3, 5, 14);
-//    graph->addEdge(4, 5, 10);
-//    graph->addEdge(5, 6, 2);
-//    graph->addEdge(6, 7, 1);
-//    graph->addEdge(6, 8, 6);
-//    graph->addEdge(7, 8, 7);
+    cout << "Finished graph creation..." << endl << "Graph load time: " << builder_time.getCronoTotalSecs() << endl << endl;
 
-    clock_t dijkstra_start_time = clock();
-    Dijkstra *dijkstra = new Dijkstra(graph, new DAryHeap(DARYHEAP_D, graph), DIJKSTRA_START_NODE);
-    dijkstra->run();
-    clock_t dijkstra_end_time = clock();
+    map<int, vector<Vertex*>*> *valueFont = new map<int, vector<Vertex*>*>();
+    vector<int> *degrees = new vector<int>();
+    for (std::vector<Vertex*>::iterator it = graph->getVertices()->begin() ; it != graph->getVertices()->end() - 1; ++it) {
+        int degree = (int) (*it)->getEdges()->size();
+        if((*valueFont)[degree] == nullptr) {
+            (*valueFont)[degree] = new  vector<Vertex*>();
+            degrees->push_back(degree);
+        }
+        (*valueFont)[degree]->push_back(*it);
+    }
+    std::sort (degrees->begin(), degrees->end());
+    int meanSize = (int) (degrees->size() / 3);
+    int rest = (int) (degrees->size() % 3);
+    int min = meanSize, mean = (meanSize + rest), max = meanSize;
+    int initMin = 0, endMin = min-1;
+    int initMean = endMin+1, endMean = (min+mean - 1);
+    int initMax = endMean+1, endMax = (int) (degrees->size() - 1);
 
-    cout << "Start time: " << start_time << endl <<
-            "Graph load time: " << graph_load_time - start_time << endl <<
-            "Dijkstra run time: " << dijkstra_end_time - dijkstra_start_time << endl <<
-            "Finish time: " << dijkstra_end_time << endl;
+    // Begin execution:
+    int selectedMin = rand() % min + initMin;
+    int selectedMean = rand() % mean + initMean;
+    int selectedMax = rand() % max + initMax;
 
-    //dijkstra->print();
+    std::string traceDateTime = Utils::currentDateTime();
+
+    std::ofstream logFile;
+    logFile.open (std::string("dijkstra_out_").append(traceDateTime).append("_global"));
+    logFile << "p\t" << graph->getNumVertices() << "\t" << graph->getNumEdges() << std::endl;
+    for (int k = 0; k < degrees->size(); k++) {
+        logFile << "d\t" << (*degrees)[k] << "\t" << (*valueFont)[(*degrees)[k]]->size() << std::endl;
+    }
+
+    double totalExecutionTime = 0;
+    std::string traceName;
+    std::string traceType;
+    bool isFirstDiscated = false;
+    for(int i = 0; i < numExecutions; i++) {
+        int selectedMinVertex = (*(*valueFont)[(*degrees)[selectedMin]])[(rand() % (*valueFont)[(*degrees)[selectedMin]]->size())]->getId();
+        int selectedMeanVertex = (*(*valueFont)[(*degrees)[selectedMean]])[(rand() % (*valueFont)[(*degrees)[selectedMean]]->size())]->getId();
+        int selectedMaxVertex = (*(*valueFont)[(*degrees)[selectedMax]])[(rand() % (*valueFont)[(*degrees)[selectedMax]]->size())]->getId();
+
+        int selectedVertex;
+        for(int j = 0; j < 3; j++) {
+            AbstractHeap *heap = new DAryHeap(dAryHeapD, graph);
+
+            switch(j) {
+                case 0:
+                    selectedVertex = selectedMinVertex;
+                    traceType = std::string("min");
+                    break;
+                case 1:
+                    selectedVertex = selectedMeanVertex;
+                    traceType = std::string("mean");
+                    break;
+                default:
+                case 2:
+                    selectedVertex = selectedMaxVertex;
+                    traceType = std::string("max");
+                    break;
+            }
+            traceName = std::string().append(traceType).append("_").append(std::to_string(i + 1)).append(traceDateTime);
+
+            CPUTimer dijkstra_time;
+            dijkstra_time.start();
+
+            Dijkstra *dijkstra = new Dijkstra(graph, heap, selectedVertex, traceName);
+            dijkstra->run();
+
+            dijkstra_time.stop();
+
+            if(i == 0 && j == 0 && !isFirstDiscated) {
+                j--;
+                isFirstDiscated = true;
+                free(heap);
+                free(dijkstra);
+                continue;
+            }
+
+            totalExecutionTime += dijkstra_time.getCPUTotalSecs();
+            logFile << "t\t" << (i+1) << "\t" << traceType << "\t" << selectedVertex << "\t" <<
+                    dijkstra_time.getCPUTotalSecs() << std::endl;
+
+            free(heap);
+            free(dijkstra);
+        }
+    }
+
+    logFile << "t\t" << "total" << "\t" << totalExecutionTime << std::endl;
+    logFile.close();
+
     cout << "FINISHED" << endl;
-    cout.flush();
 
     return 0;
 }

@@ -10,6 +10,7 @@ private:
     bool undirected;
     int initialVertex;
     int numVertices;
+    long numEdges;
     std::vector<Vertex*> *vertices;
 
     void addVertex(int begin, int end);
@@ -18,6 +19,7 @@ public:
     Graph(bool undirected, int initialVertex, int finalVertex);
     int getInitialVertex();
     int getNumVertices();
+    long getNumEdges();
     std::vector<Vertex*>* getVertices();
     Vertex* getVertex(int vertex);
     bool isVertexInGraph(int vertex);
