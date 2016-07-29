@@ -83,7 +83,8 @@ int main(int argc, char **argv)
                     traceType = std::string("max");
                     break;
             }
-            traceName = std::string().append(traceType).append("_").append(std::to_string(i + 1)).append(traceDateTime);
+            traceName = std::string().append(traceType).append("_").append(std::to_string(i + 1)).append("_")
+                    .append(traceDateTime);
 
             CPUTimer dijkstra_time;
             dijkstra_time.start();
