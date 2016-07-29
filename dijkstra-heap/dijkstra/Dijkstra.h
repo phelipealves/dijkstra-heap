@@ -14,6 +14,7 @@ private:
     AbstractHeap *heap;
     int initialVertex;
     std::ofstream logFile;
+    std::string traceName;
 
     void initialize();
 

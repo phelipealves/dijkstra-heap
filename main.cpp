@@ -94,6 +94,11 @@ int main(int argc, char **argv)
 
             dijkstra_time.stop();
 
+            // Reset Vertex distances
+            for(int vertexNum = 0; vertexNum < graph->getNumVertices(); vertexNum++) {
+                graph->getVertex(vertexNum+graph->getInitialVertex())->setDistance(INT_MAX);
+            }
+
             if(i == 0 && j == 0 && !isFirstDiscated) {
                 j--;
                 isFirstDiscated = true;

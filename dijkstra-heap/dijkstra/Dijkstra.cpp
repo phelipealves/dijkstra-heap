@@ -33,7 +33,10 @@ void Dijkstra::run() {
         Vertex* vertex = heap->pop();
         numHeap--;
 
-        std::vector<Edge*>* vertexEdges = vertex->getEdges();
+        std::vector<Edge*>* vertexEdges = new std::vector<Edge*>(vertex->getEdges()->size());
+        for(int i = 0; i < vertex->getEdges()->size(); i++) {
+            (*vertexEdges)[i] = (*vertex->getEdges())[i];
+        }
         if(vertexEdges->empty()) {
             continue;
         }
