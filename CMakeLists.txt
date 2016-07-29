@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.0.2)
 project(dijkstra-heap)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -9,7 +9,7 @@ add_executable(dijkstra_run ${SOURCE_FILES})
 include_directories(dijkstra-heap)
 
 add_subdirectory(dijkstra-heap)
-add_subdirectory(dijkstra-heap_test)
+#add_subdirectory(dijkstra-heap_test)
 
 target_link_libraries(dijkstra_run dijkstra-heap)
 
