@@ -6,6 +6,7 @@ Dijkstra::Dijkstra(Graph *graph, AbstractHeap *heap, int initialVertex, std::str
     this->graph = graph;
     this->heap = heap;
     this->initialVertex = initialVertex;
+    this->traceName = traceName;
 
     if(!graph->isVertexInGraph(initialVertex)) {
         std::cout << "INITIAL VERTEX " << initialVertex << " NOT EXISTS IN GRAPH" << std::endl;
@@ -13,7 +14,6 @@ Dijkstra::Dijkstra(Graph *graph, AbstractHeap *heap, int initialVertex, std::str
     }
 
     initialize();
-    logFile.open (std::string("dijkstra_out_").append(traceName));
 }
 
 void Dijkstra::initialize() {
@@ -28,8 +28,13 @@ void Dijkstra::run() {
     int numHeap = 1;
     while (!heap->isEmpty())
     {
+        iteration++;
         DAryHeap* daryHeap = dynamic_cast<DAryHeap*>(heap);
-        logFile << ++iteration  << "\t" << numHeap << "\t" << DAryHeap::getTreeHeight(numHeap, daryHeap->getDNumChild()) << std::endl;
+
+        logFile.open(std::string("ci/dijkstra_out_").append(std::to_string(iteration)).append(".dat"), std::fstream::app);
+        logFile << iteration  << "\t" << numHeap << "\t" << DAryHeap::getTreeHeight(numHeap, daryHeap->getDNumChild()) << std::endl;
+        logFile.close();
+
         Vertex* vertex = heap->pop();
         numHeap--;
 
